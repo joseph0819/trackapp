@@ -1,0 +1,9 @@
+/* src/app.css */
+@import "tailwindcss";
+html {
+    scroll-behavior: smooth;
+  }
+  :target {
+    scroll-margin-top: 180px; /* adjust to match header height */
+  }
+      
