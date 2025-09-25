@@ -9,7 +9,7 @@
     <p class="font-semibold">🌟 Keep going, you’re doing great!</p>
 
     <p class="text-xs opacity-80">
-      © {year} TRackApp
+      © {year} TrackApp
     </p>
   </div>
 </footer>
