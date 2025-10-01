@@ -25,10 +25,9 @@
   onDestroy(() => clearInterval(interval));
 
   $: start = new Date(startDate);
-  $: daysSinceBeginning = Math.ceil(
-    (Date.now() - start.getTime()) / (1000 * 60 * 60 * 24)
-  );
-  $: daysActive = new Set(entries.map((e) => e.date)).size;
+
+  // ✅ Total entries instead of days active
+  $: totalEntries = entries.length;
 </script>
 
 <header class="sticky top-0 bg-white shadow-md z-30">
@@ -68,7 +67,8 @@
     >
       <div class="flex gap-6">
         <p>
-          ✅ Days active: <span class="font-semibold">{daysActive}</span>
+          ✅ Entries Entered:
+          <span class="font-semibold">{totalEntries}</span>
         </p>
       </div>
       <div class="text-right">
