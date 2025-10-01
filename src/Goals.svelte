@@ -28,7 +28,7 @@
     if (goals.mood) activeCount++;
 
     if (activeCount < 4) {
-      toast.error("⚠ Please set at least 4 goals before saving.");
+      toast.error("Please set at least 4 goals before saving.");
       return;
     }
 
@@ -37,7 +37,7 @@
     dispatch("setGoals", goals);
 
     saved = true;
-    toast.success("✅ Goals updated!");
+    toast.success(" Goals updated!");
     setTimeout(() => (saved = false), 2000);
   }
 

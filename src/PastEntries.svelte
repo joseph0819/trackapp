@@ -24,24 +24,13 @@
     dispatch("seeAll");
   }
 
-  function parseDate(d) {
-    if (!d) return new Date(0);
-
-    if (d.includes("-")) {
-      const [y, m, day] = d.split("-");
-      return new Date(y, m - 1, day);
-    }
-
-    if (d.includes("/")) {
-      const [day, m, y] = d.split("/");
-      return new Date(y, m - 1, day);
-    }
-
-    return new Date(d);
+  function parseDateTime(entry) {
+    return entry?.timestamp ? new Date(entry.timestamp) : new Date(0);
   }
 
+  
   $: sortedEntries = [...entries].sort(
-    (a, b) => parseDate(b.date).getTime() - parseDate(a.date).getTime()
+    (a, b) => parseDateTime(b).getTime() - parseDateTime(a).getTime()
   );
 </script>
 
@@ -51,39 +40,38 @@
   {#if sortedEntries.length === 0}
     <p class="text-gray-600 italic">No entries yet.</p>
   {:else}
-    <div class="grid md:grid-cols-3 gap-6">
+    <div class="grid grid-flow-col auto-cols-fr gap-6 overflow-x-auto md:overflow-visible">
       {#each sortedEntries.slice(0, 3) as entry, i}
         <div
           class="p-5 bg-white rounded-xl shadow-sm border border-gray-200
                  hover:shadow-md transition-shadow duration-200
-                 flex flex-col justify-between"
+                 flex flex-col justify-between min-w-[250px]"
         >
+          <!-- Date & Time -->
           <div class="flex justify-between items-center mb-2">
-            <p class="font-semibold">{entry.date}</p>
-            <p class="text-sm text-gray-500">{entry.time}</p>
+            <p class="font-semibold">
+              {new Date(entry.timestamp).toLocaleDateString("en-CA")}
+            </p>
+            <p class="text-sm text-gray-500">
+              {new Date(entry.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+            </p>
           </div>
 
-          <!-- All saved details -->
+          <!-- Entry Details -->
           <div class="text-sm space-y-1 mb-3">
             {#if entry.sleep}<p>😴 Sleep: {entry.sleep} hrs</p>{/if}
             {#if entry.water}<p>💧 Water: {entry.water} cups</p>{/if}
             <p>🥗 Vegetables: {entry.vegetables ? "Yes" : "No"}</p>
             <p>🍎 Fruits: {entry.fruits ? "Yes" : "No"}</p>
-            {#if entry.exercises?.length}<p>
-                🏃 {entry.exercises.join(", ")}
-              </p>{/if}
-            {#if entry.movements?.length}<p>
-                🚶 {entry.movements.join(", ")}
-              </p>{/if}
+            {#if entry.exercises?.length}<p>🏃 {entry.exercises.join(", ")}</p>{/if}
+            {#if entry.movements?.length}<p>🚶 {entry.movements.join(", ")}</p>{/if}
             {#if entry.fastFood}<p>🍔 {entry.fastFood}</p>{/if}
             {#if entry.endOfDay}<p>🌙 {entry.endOfDay}</p>{/if}
             {#if entry.mood}<p>😊 {entry.mood}</p>{/if}
-            {#if entry.notes}<p class="italic text-gray-600">
-                📝 {entry.notes}
-              </p>{/if}
+            {#if entry.notes}<p class="italic text-gray-600">📝 {entry.notes}</p>{/if}
           </div>
 
-          <!-- Edit -->
+          <!-- Edit Button -->
           <div class="text-right">
             <button
               on:click={() => startEditing(i, entry)}
@@ -98,7 +86,7 @@
     </div>
   {/if}
 
-  <!-- See More button -->
+  <!-- See More -->
   {#if sortedEntries.length > 0}
     <div class="mt-8 text-center">
       <button

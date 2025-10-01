@@ -3,7 +3,6 @@
   import { toast } from "svelte-sonner"; 
 
   export let settings;
-
   const dispatch = createEventDispatcher();
 
   // form state
@@ -30,23 +29,6 @@
     (mood ? 1 : 0) +
     (notes ? 1 : 0);
 
-  // --- Parse dd/mm/yyyy OR yyyy-mm-dd into JS Date ---
-  function parseDate(d) {
-    if (!d) return new Date(0);
-
-    if (d.includes("-")) {
-      const [y, m, day] = d.split("-");
-      return new Date(y, m - 1, day);
-    }
-
-    if (d.includes("/")) {
-      const [day, m, y] = d.split("/");
-      return new Date(y, m - 1, day);
-    }
-
-    return new Date(d);
-  }
-
   function saveEntry() {
     if (filledCount < 4) {
       toast.error("⚠️ Please fill at least 4 activities before saving.");
@@ -55,8 +37,7 @@
 
     const now = new Date();
     const newEntry = {
-      date: now.toLocaleDateString("en-CA"), // yyyy-mm-dd
-      time: now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+      timestamp: now.toISOString(), 
       sleep,
       water,
       vegetables,
@@ -70,7 +51,7 @@
     };
 
     dispatch("save", newEntry);
-    toast.success("✅ Entry saved successfully!");
+    toast.success(" Entry saved successfully!");
     resetForm();
   }
 
@@ -89,7 +70,7 @@
 
   function handleDisabledClick() {
     if (filledCount < 4) {
-      toast.error("⚠️ You need to log at least 4 items before saving.");
+      toast.error(" You need to log at least 4 items before saving.");
     }
   }
 </script>
@@ -249,16 +230,22 @@
     <!-- Save Button -->
     <div>
       <button
-        type="submit"
-        disabled={filledCount < 4}
-        on:click={handleDisabledClick}
-        class="px-5 py-2 text-sm font-semibold rounded-lg shadow transition
-          {filledCount < 4
+      type="button"
+      on:click={() => {
+        if (filledCount < 4) {
+          toast.error(" You need to log at least 4 items before saving.");
+        } else {
+          saveEntry();
+        }
+      }}
+      class="px-5 py-2 text-sm font-semibold rounded-lg shadow transition
+        {filledCount < 4
           ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
           : 'bg-blue-600 text-white hover:bg-blue-700 cursor-pointer'}"
-      >
-        💾 Save Entry
-      </button>
+    >
+      💾 Save Entry
+    </button>
+    
     </div>
   </form>
 </section>
